@@ -82,6 +82,7 @@ export class App {
     config.fallbackRoute("index");
 
     return qEnv.pushState.then(pushState => {
+      return false
       if (!pushState) {
         return;
       }
