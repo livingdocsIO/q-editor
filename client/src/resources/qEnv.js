@@ -5,7 +5,7 @@ class QEnv {
 
   async load() {
     try {
-      const response = await fetch("/env");
+      const response = await fetch(`${document.baseURI}env`);
       if (!response.ok) {
         throw response;
       }
