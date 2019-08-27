@@ -85,6 +85,10 @@
       "set-value": "npm:set-value@^3.0.0",
       "text": "github:systemjs/plugin-text@^0.0.8"
     },
-    "devDependencies": {}
+    "devDependencies": {},
+    "buildConfig": {
+      "transpileES6": true,
+      "minify": true
+    }
   }
 }
