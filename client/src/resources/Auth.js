@@ -11,6 +11,10 @@ export default class Auth {
   loginCallbacks = [];
 
   constructor(user, qConfig, loader, diContainer, authService) {
+    const tokenFromStorage = window.parent.localStorage.getItem('accessToken')
+    const token = tokenFromStorage && `${tokenFromStorage.replace(/(^"|"$)/g, '')}`
+    localStorage.setItem('aurelia_authentication', JSON.stringify({access_token: token}))
+
     this.user = user;
     this.qConfig = qConfig;
     this.loader = loader;
