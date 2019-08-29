@@ -2,13 +2,14 @@ const Hapi = require("@hapi/hapi");
 const routes = require("./routes/routes.js");
 
 const plugins = [require("@hapi/inert")];
+const serverConfig = require('./config')
 
 let server;
 
 async function start() {
   try {
     const hapiOptions = {
-      port: process.env.PORT || 8080,
+      port: serverConfig.port,
       load: { sampleInterval: 1000 },
       routes: {
         state: { parse: false, failAction: "log" }
