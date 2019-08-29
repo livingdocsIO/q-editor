@@ -1,4 +1,5 @@
 import { bindable, observable, inject, LogManager } from "aurelia-framework";
+import { HttpClient } from "aurelia-fetch-client";
 import { I18N } from "aurelia-i18n";
 import qEnv from "resources/qEnv.js";
 import QTargets from "resources/QTargets.js";
@@ -25,7 +26,7 @@ const defaultSizeOptions = [
   }
 ];
 
-@inject(QTargets, QConfig, User, I18N, Element)
+@inject(QTargets, QConfig, User, I18N, Element, HttpClient)
 export class ItemPreview {
   @bindable
   data;
@@ -39,12 +40,13 @@ export class ItemPreview {
   sizeOptions = [];
   errorMessage = "";
 
-  constructor(qTargets, qConfig, user, i18n, element) {
+  constructor(qTargets, qConfig, user, i18n, element, httpClient) {
     this.qTargets = qTargets;
     this.qConfig = qConfig;
     this.user = user;
     this.i18n = i18n;
     this.element = element;
+    this.httpClient = httpClient;
 
     // we track the preview widths the user clicked
     // to hide the notification about checking all of them if he has done so
@@ -247,23 +249,26 @@ export class ItemPreview {
 
     return qEnv.QServerBaseUrl.then(QServerBaseUrl => {
       if (this.id) {
-        return fetch(
+        return this.httpClient.fetch(
           `${QServerBaseUrl}/rendering-info/${this.id}/${
             this.targetProxy.target.key
           }?ignoreInactive=true&noCache=true&toolRuntimeConfig=${encodeURI(
             JSON.stringify(toolRuntimeConfig)
           )}`
-        );
+        , {
+          credentials: 'include'
+        });
       } else if (this.data) {
         const body = {
           item: this.data,
           toolRuntimeConfig: toolRuntimeConfig
         };
-        return fetch(
+        return this.httpClient.fetch(
           `${QServerBaseUrl}/rendering-info/${this.targetProxy.target.key}`,
           {
             method: "POST",
             body: JSON.stringify(body),
+            credentials: 'include',
             headers: {
               "Content-Type": "application/json"
             }
