@@ -96,7 +96,7 @@ export async function configure(aurelia) {
             if (toolNames.indexOf(namespace) >= 0) {
               return `${QServerBaseUrl}/tools/${namespace}/locales/{{lng}}/translation.json`;
             }
-            return "/locales/{{lng}}/{{ns}}.json";
+            return `${document.baseURI.replace(/\/*$/g, '')}/locales/{{lng}}/{{ns}}.json`;
           },
           init: {
             mode: "cors",
