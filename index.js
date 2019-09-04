@@ -1,43 +1,48 @@
+const fs = require('fs')
+
 const Hapi = require("@hapi/hapi");
 const routes = require("./routes/routes.js");
 
 const plugins = [require("@hapi/inert")];
 const serverConfig = require('./config')
-
 let server;
 
+const patchBaseUrlInIndexHtml = () => {
+  const filePath = require.resolve('./client/export/index.html')
+  const currentContent = fs.readFileSync(filePath, 'utf8')
+  const newContent = currentContent.replace(/<base.*\n/, `<base href="${serverConfig.basePath || '/'}">\n`)
+  fs.writeFileSync(filePath, newContent, 'utf8')
+}
+
+
 async function start() {
-  try {
-    const hapiOptions = {
-      port: serverConfig.port,
-      load: { sampleInterval: 1000 },
-      routes: {
-        state: { parse: false, failAction: "log" }
-      }
-    };
-
-    server = Hapi.server(hapiOptions);
-
-    await server.register(plugins);
-
-    server.route(routes);
-
-    if (process.env.FEATURE_BROTLI) {
-      await server.register({
-        plugin: require("brok"),
-        options: {
-          compress: {
-            quality: 5
-          }
-        }
-      });
+  patchBaseUrlInIndexHtml()
+  const hapiOptions = {
+    port: serverConfig.port,
+    load: { sampleInterval: 1000 },
+    routes: {
+      state: { parse: false, failAction: "log" }
     }
+  };
 
-    await server.start();
-  } catch (err) {
-    // console.log(err.message, err.stack);
-    throw err;
+  server = Hapi.server(hapiOptions);
+
+  await server.register(plugins);
+
+  server.route(routes);
+
+  if (process.env.FEATURE_BROTLI) {
+    await server.register({
+      plugin: require("brok"),
+      options: {
+        compress: {
+          quality: 5
+        }
+      }
+    });
   }
+
+  await server.start();
 }
 
 start()
