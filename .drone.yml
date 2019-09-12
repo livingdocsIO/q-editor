@@ -111,6 +111,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: b786cb1f0c7f1087581c701cbe57d8d81018b4f14dfeb0db1cef92f9bec276a7
+hmac: 8d54b59af72f9f713ee7da0c5b34ec147bb1dc5cc00df486205d3ac6cab97336
 
 ...
