@@ -1,35 +1,23 @@
 const fs = require('fs')
 
 const Hapi = require("@hapi/hapi");
-const routes = require("./routes/routes.js");
 
 const plugins = [require("@hapi/inert")];
 const serverConfig = require('./config')
 let server;
 
-const patchBaseUrlInIndexHtml = () => {
-  const filePath = require.resolve('./client/export/index.html')
-  const currentContent = fs.readFileSync(filePath, 'utf8')
-  const newContent = currentContent.replace(/<base.*\n/, `<base href="${serverConfig.basePath || '/'}/">\n`)
-  fs.writeFileSync(filePath, newContent, 'utf8')
-}
-
-
 async function start() {
-  patchBaseUrlInIndexHtml()
-  const hapiOptions = {
+  server = Hapi.server({
     port: serverConfig.port,
     load: { sampleInterval: 1000 },
     routes: {
       state: { parse: false, failAction: "log" }
     }
-  };
-
-  server = Hapi.server(hapiOptions);
+  });
 
   await server.register(plugins);
 
-  server.route(routes);
+  server.route(require("./routes")(serverConfig));
 
   if (process.env.FEATURE_BROTLI) {
     await server.register({
