@@ -11,8 +11,7 @@ steps:
       npm install
       cd client
       npm install
-      npm install jspm -g
-      jspm install
+      node_modules/.bin/jspm install
 - name: build
   image: docker
   volumes:
@@ -112,6 +111,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: 8d54b59af72f9f713ee7da0c5b34ec147bb1dc5cc00df486205d3ac6cab97336
+hmac: 7926cd80d92578fec7aecc05355315da6603b38ddcc583f044811390d6f7acfe
 
 ...

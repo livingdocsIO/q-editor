@@ -1,5 +1,5 @@
 {
-  "dependencies": {
+  "devDependencies": {
     "aurelia-bundler": "^0.7.0",
     "aurelia-protractor-plugin": "^1.0.6",
     "aurelia-tools": "^2.0.0",
@@ -85,7 +85,6 @@
       "set-value": "npm:set-value@^3.0.0",
       "text": "github:systemjs/plugin-text@^0.0.8"
     },
-    "devDependencies": {},
     "buildConfig": {
       "transpileES6": true,
       "minify": true
