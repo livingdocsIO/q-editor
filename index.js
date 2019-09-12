@@ -10,7 +10,7 @@ let server;
 const patchBaseUrlInIndexHtml = () => {
   const filePath = require.resolve('./client/export/index.html')
   const currentContent = fs.readFileSync(filePath, 'utf8')
-  const newContent = currentContent.replace(/<base.*\n/, `<base href="${serverConfig.basePath || '/'}">\n`)
+  const newContent = currentContent.replace(/<base.*\n/, `<base href="${serverConfig.basePath || '/'}/">\n`)
   fs.writeFileSync(filePath, newContent, 'utf8')
 }
 
