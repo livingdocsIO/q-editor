@@ -2,13 +2,13 @@
   "name": "@nzz/q-editor",
   "version": "4.0.3",
   "description": "Q Editor - The editor part of the Q toolbox",
-  "homepage": "https://github.com/nzzdev/Q-editor",
+  "homepage": "https://github.com/livingdocsIO/q-editor",
   "bugs": {
-    "url": "https://github.com/nzzdev/Q-editor/issues"
+    "url": "https://github.com/livingdocsIO/q-editor/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nzzdev/Q-editor"
+    "url": "https://github.com/livingdocsIO/q-editor"
   },
   "main": "index.js",
   "scripts": {
