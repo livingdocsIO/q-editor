@@ -35,6 +35,24 @@
       "email": "philip.kueng@nzz.ch"
     }
   ],
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "release": {
+    "npmPublish": false,
+    "verifyConditions": [
+      "@semantic-release/github"
+    ],
+    "publish": [
+      "@semantic-release/github"
+    ],
+    "verifyRelease": [
+      {
+        "path": "semantic-release-verify-patch",
+        "applyRegex": "^release-"
+      }
+    ]
+  },
   "license": "MIT",
   "dependencies": {
     "@hapi/hapi": "^18.3.1",
