@@ -101,7 +101,7 @@ steps:
   image: appropriate/curl
   commands:
     - |
-      curl -i -XPOST -H 'Content-Type:application/json' -d "{\"serviceHandle\":\"q_tool_poll_develop\",\"dockerImageTag\":\"$DRONE_TAG\"}" https://releases.livingdocs.io/deploy;
+      curl -i -XPOST -H 'Content-Type:application/json' -d "{\"serviceHandle\":\"q_editor_develop\",\"dockerImageTag\":\"$DRONE_TAG\"}" https://releases.livingdocs.io/deploy;
 volumes:
 - name: dockersocket
   host:
@@ -111,6 +111,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: 7926cd80d92578fec7aecc05355315da6603b38ddcc583f044811390d6f7acfe
+hmac: 6dedd8906beaf9bf2742a87909240f0d2c556e32ee2c30d2590924788a540e7b
 
 ...
