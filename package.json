@@ -39,19 +39,7 @@
     "access": "restricted"
   },
   "release": {
-    "npmPublish": false,
-    "verifyConditions": [
-      "@semantic-release/github"
-    ],
-    "publish": [
-      "@semantic-release/github"
-    ],
-    "verifyRelease": [
-      {
-        "path": "semantic-release-verify-patch",
-        "applyRegex": "^release-"
-      }
-    ]
+    "extends": "@livingdocs/semantic-release-presets/github-verify"
   },
   "license": "MIT",
   "dependencies": {
