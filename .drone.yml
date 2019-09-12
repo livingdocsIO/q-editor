@@ -1,0 +1,116 @@
+---
+kind: pipeline
+name: build-q-editor
+
+steps:
+- name: install
+  image: node:9-alpine
+  commands:
+    - |
+      apk add --no-cache git
+      npm install
+      cd client
+      npm install
+      jspm install
+- name: build
+  image: docker
+  volumes:
+    - name: dockersocket
+      path: /var/run/docker.sock
+  environment:
+    DOCKER_USERNAME:
+      from_secret: DOCKER_USERNAME
+    DOCKER_PASSWORD:
+      from_secret: DOCKER_PASSWORD
+  commands:
+    - |
+      echo $DOCKER_PASSWORD | docker login -u="$DOCKER_USERNAME" --password-stdin 1>/dev/null
+
+      SHA_TAG=livingdocs/q-editor:sha-$DRONE_COMMIT_SHA
+      BRANCH_TAG=livingdocs/q-editor:branch-$(echo $DRONE_BRANCH | sed 's/[^a-zA-Z0-9.-]/-/g')
+
+      docker build -t $SHA_TAG . -f-<<EOF
+      FROM node:9-alpine
+      RUN apk add --no-cache tini
+      WORKDIR /app
+      ADD ./ /app
+      ENTRYPOINT  ["/sbin/tini", "-g", "--"]
+      CMD node index.js
+      EOF
+
+      docker tag $SHA_TAG $BRANCH_TAG
+      docker push $SHA_TAG
+      docker push $BRANCH_TAG
+
+      echo -----------------
+      echo Docker Tag: $SHA_TAG
+      echo Docker Branch Tag: $BRANCH_TAG
+      echo -----------------
+
+volumes:
+- name: dockersocket
+  host:
+    path: /var/run/docker.sock
+
+trigger:
+  event: [push]
+---
+kind: pipeline
+name: tag
+depends_on: [build-q-editor]
+
+clone:
+  depth: 100
+
+steps:
+- name: release
+  image: livingdocs/semantic-release:v1.0.0
+  environment:
+    GH_TOKEN:
+      from_secret: GH_TOKEN
+
+trigger:
+  event: [push]
+---
+kind: pipeline
+name: release-q-editor
+
+clone:
+  disable: true
+
+steps:
+- name: tag
+  image: docker:18.06.3-ce-dind
+  volumes:
+    - name: dockersocket
+      path: /var/run/docker.sock
+  environment:
+    DOCKER_USERNAME:
+      from_secret: DOCKER_USERNAME
+    DOCKER_PASSWORD:
+      from_secret: DOCKER_PASSWORD
+  commands:
+    - |
+      echo $DOCKER_PASSWORD | docker login -u="$DOCKER_USERNAME" --password-stdin 1>/dev/null
+      SHA_TAG=livingdocs/q-editor:sha-$DRONE_COMMIT_SHA
+      RELEASE_TAG=livingdocs/q-editor:$DRONE_TAG
+      docker pull $SHA_TAG
+      docker tag $SHA_TAG $RELEASE_TAG
+      docker push $RELEASE_TAG
+- name: deploy
+  image: appropriate/curl
+  commands:
+    - |
+      curl -i -XPOST -H 'Content-Type:application/json' -d "{\"serviceHandle\":\"q_tool_poll_develop\",\"dockerImageTag\":\"$DRONE_TAG\"}" https://releases.livingdocs.io/deploy;
+volumes:
+- name: dockersocket
+  host:
+    path: /var/run/docker.sock
+
+trigger:
+  event: [tag]
+---
+kind: signature
+hmac: b786cb1f0c7f1087581c701cbe57d8d81018b4f14dfeb0db1cef92f9bec276a7
+
+...
