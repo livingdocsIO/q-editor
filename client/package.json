@@ -1,5 +1,5 @@
 {
-  "d§§ependencies": {
+  "dependencies": {
     "aurelia-bundler": "^0.7.0",
     "aurelia-protractor-plugin": "^1.0.6",
     "aurelia-tools": "^2.0.0",
