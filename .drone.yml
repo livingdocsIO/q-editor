@@ -2,6 +2,7 @@
 kind: pipeline
 name: build-q-editor
 
+
 steps:
 - name: install
   image: node:9-alpine
@@ -111,6 +112,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: 6dedd8906beaf9bf2742a87909240f0d2c556e32ee2c30d2590924788a540e7b
+hmac: 462c04546a6c038f72c7d3e3511ac8a5aa6c0ff5306a85191484079ee7c88240
 
 ...
