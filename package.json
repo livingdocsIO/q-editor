@@ -13,7 +13,7 @@
   "main": "index.js",
   "scripts": {
     "start": "Q_SERVER_BASE_URL='https://localhost:9000/proxy/q-server' node index.js",
-    "build": "cd client && gulp export && cd ..",
+    "build": "cd client && ./node_modules/.bin/gulp export && cd ..",
     "watch": "cd client && ./node_modules/.bin/gulp watch && cd .."
   },
   "author": "Beni Buess <beni.buess@nzz.ch>",
