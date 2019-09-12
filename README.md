@@ -1,5 +1,6 @@
 # Q Editor [![Build Status](https://travis-ci.com/nzzdev/Q-editor.svg?branch=dev)](https://travis-ci.com/nzzdev/Q-editor)
 
+
 **Maintainer**: [benib](https://github.com/benib)
 
 This is the editor for the Q Toolbox. To make use of Q editor you will also need a [Q server](https://nzzdev.github.io/Q-server/).
