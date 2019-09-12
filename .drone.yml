@@ -11,6 +11,7 @@ steps:
       npm install
       cd client
       npm install
+      npm install jspm -g
       jspm install
 - name: build
   image: docker
