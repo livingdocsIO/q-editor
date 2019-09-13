@@ -16,14 +16,17 @@ steps:
       from_secret: DOCKER_USERNAME
     DOCKER_PASSWORD:
       from_secret: DOCKER_PASSWORD
+    GH_TOKEN:
+      from_secret: GH_TOKEN
   commands:
     - |
       echo $DOCKER_PASSWORD | docker login -u="$DOCKER_USERNAME" --password-stdin 1>/dev/null
 
       SHA_TAG=livingdocs/q-editor:sha-$DRONE_COMMIT_SHA
       BRANCH_TAG=livingdocs/q-editor:branch-$(echo $DRONE_BRANCH | sed 's/[^a-zA-Z0-9.-]/-/g')
+      JSPM_GITHUB_AUTH_TOKEN=$(echo -n livingdocs-automation:$GH_TOKEN | base64)
 
-      docker build -t $SHA_TAG .
+      docker build --build-arg JSPM_GITHUB_AUTH_TOKEN=$JSPM_GITHUB_AUTH_TOKEN -t $SHA_TAG .
       docker tag $SHA_TAG $BRANCH_TAG
       docker push $SHA_TAG
       docker push $BRANCH_TAG
