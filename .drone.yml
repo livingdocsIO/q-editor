@@ -28,7 +28,7 @@ steps:
       echo JSPM token: $JSPM_GITHUB_AUTH_TOKEN
       echo -----------------
 
-      docker build --build-arg JSPM_GITHUB_AUTH_TOKEN=$JSPM_GITHUB_AUTH_TOKEN -t $SHA_TAG .
+      docker build --build-arg JSPM_GITHUB_AUTH_TOKEN="$JSPM_GITHUB_AUTH_TOKEN" -t $SHA_TAG .
       docker tag $SHA_TAG $BRANCH_TAG
       docker push $SHA_TAG
       docker push $BRANCH_TAG
@@ -102,6 +102,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: 4b7bd9ba4272c52604a8566d38b407d59a1fceafcdb7730bd9d3a1fac213b15b
+hmac: 95b637ab991e50d6afe98e75dcccabe37f2d0f31012bc8c7b9121cdb990f86fe
 
 ...
