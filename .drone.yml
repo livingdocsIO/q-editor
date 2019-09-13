@@ -2,8 +2,18 @@
 kind: pipeline
 name: build-q-editor
 
-
 steps:
+- name: install
+  image: node:9-alpine
+  commands:
+    - |
+      apk add --no-cache git
+      npm install
+      cd client
+      npm install
+      node_modules/.bin/jspm install
+      node_modules/.bin/gulp export
+
 - name: build
   image: docker
   volumes:
@@ -14,17 +24,14 @@ steps:
       from_secret: DOCKER_USERNAME
     DOCKER_PASSWORD:
       from_secret: DOCKER_PASSWORD
-    GH_TOKEN:
-      from_secret: GH_TOKEN
   commands:
     - |
       echo $DOCKER_PASSWORD | docker login -u="$DOCKER_USERNAME" --password-stdin 1>/dev/null
 
       SHA_TAG=livingdocs/q-editor:sha-$DRONE_COMMIT_SHA
       BRANCH_TAG=livingdocs/q-editor:branch-$(echo $DRONE_BRANCH | sed 's/[^a-zA-Z0-9.-]/-/g')
-      JSPM_GITHUB_AUTH_TOKEN=$(echo -n livingdocs-automation:$GH_TOKEN | base64)
 
-      docker build --build-arg JSPM_GITHUB_AUTH_TOKEN="$JSPM_GITHUB_AUTH_TOKEN" -t $SHA_TAG .
+      docker build -t $SHA_TAG .
       docker tag $SHA_TAG $BRANCH_TAG
       docker push $SHA_TAG
       docker push $BRANCH_TAG
@@ -98,6 +105,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: 9f7619e07f4deacb655bf7899804b3ebd26b8217b50403bedddcadfa37058eb8
+hmac: 7bb1ebaea4b53f01c704f95596ea847dfc3a035ad9706bbd16cfe9072680ce3d
 
 ...
