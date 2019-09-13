@@ -6,13 +6,6 @@ name: build-q-editor
 steps:
 - name: install
   image: node:9-alpine
-  commands:
-    - |
-      apk add --no-cache git
-      npm install
-      cd client
-      npm install
-      node_modules/.bin/jspm install
 - name: build
   image: docker
   volumes:
@@ -30,15 +23,7 @@ steps:
       SHA_TAG=livingdocs/q-editor:sha-$DRONE_COMMIT_SHA
       BRANCH_TAG=livingdocs/q-editor:branch-$(echo $DRONE_BRANCH | sed 's/[^a-zA-Z0-9.-]/-/g')
 
-      docker build -t $SHA_TAG . -f-<<EOF
-      FROM node:9-alpine
-      RUN apk add --no-cache tini
-      WORKDIR /app
-      ADD ./ /app
-      ENTRYPOINT  ["/sbin/tini", "-g", "--"]
-      CMD node index.js
-      EOF
-
+      docker build -t $SHA_TAG
       docker tag $SHA_TAG $BRANCH_TAG
       docker push $SHA_TAG
       docker push $BRANCH_TAG
@@ -112,6 +97,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: 462c04546a6c038f72c7d3e3511ac8a5aa6c0ff5306a85191484079ee7c88240
+hmac: 7686bc72e74298866d6bdbec36631d7fe768096ed7ccc1ca467685bc9000a1f6
 
 ...

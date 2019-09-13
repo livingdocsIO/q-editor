@@ -14,6 +14,8 @@ COPY ./LICENSE /app
 COPY ./index.js /app
 COPY ./routes /app/routes
 
+COPY config.js /app/config.js
+
 COPY ./client/favicon.png /app/client/favicon.png
 COPY ./client/favicon-playground.png /app/client/favicon-playground.png
 
