@@ -13,9 +13,9 @@ RUN npm install
 # JSPM_GITHUB_AUTH_TOKEN=$(echo -n livingdocs-automationOC:$GH_TOKEN | base64)
 # docker build --build-arg JSPM_GITHUB_AUTH_TOKEN=$JSPM_GITHUB_AUTH_TOKEN -t q-editor .
 ARG JSPM_GITHUB_AUTH_TOKEN=a-very-secret-token
-RUN node_modules/.bin/jspm install
+RUN node_modules/.bin/jspm install && cp -r jspm_packages /app/client/export/jspm_packages
 # Copy the jspm_packages as there are some modules that are not loaded from a bundle
-COPY ./client/jspm_packages /app/client/export/jspm_packages
+# COPY ./client/jspm_packages /app/client/export/jspm_packages
 
 COPY ./client/favicon.png /app/client/favicon.png
 COPY ./client/favicon-playground.png /app/client/favicon-playground.png
