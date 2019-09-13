@@ -23,7 +23,7 @@ steps:
       SHA_TAG=livingdocs/q-editor:sha-$DRONE_COMMIT_SHA
       BRANCH_TAG=livingdocs/q-editor:branch-$(echo $DRONE_BRANCH | sed 's/[^a-zA-Z0-9.-]/-/g')
 
-      docker build -t $SHA_TAG
+      docker build -t $SHA_TAG .
       docker tag $SHA_TAG $BRANCH_TAG
       docker push $SHA_TAG
       docker push $BRANCH_TAG
@@ -97,6 +97,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: 7686bc72e74298866d6bdbec36631d7fe768096ed7ccc1ca467685bc9000a1f6
+hmac: 51cd81c1de93fce27239ea789f9c0634b39e66ca85a839932fad29caae65ae59
 
 ...
