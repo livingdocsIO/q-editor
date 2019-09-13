@@ -648,7 +648,7 @@ System.config({
       "resources/checkers/AvailabilityChecker.js",
       "resources/checkers/NotificationChecker.js"
     ],
-    "q-bundle-4afcc03c8e.js": [
+    "q-bundle-39033c9ff2.js": [
       "app.html!github:systemjs/plugin-text@0.0.8.js",
       "app.js",
       "binding-behaviors/AsyncBindingBehavior.js",
