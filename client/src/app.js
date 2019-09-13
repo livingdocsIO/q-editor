@@ -82,12 +82,11 @@ export class App {
     config.fallbackRoute("index");
 
     return qEnv.pushState.then(pushState => {
-      return false
-      if (!pushState) {
-        return;
-      }
+      if (!pushState) return false;
+
       config.options.pushState = true;
-      config.options.root = "/";
+      // inherits automatically from document.baseURI
+      config.options.root = document.baseURI.replace(window.origin, '');
     });
   }
 
