@@ -24,10 +24,6 @@ steps:
       BRANCH_TAG=livingdocs/q-editor:branch-$(echo $DRONE_BRANCH | sed 's/[^a-zA-Z0-9.-]/-/g')
       JSPM_GITHUB_AUTH_TOKEN=$(echo -n livingdocs-automation:$GH_TOKEN | base64)
 
-      echo -----------------
-      echo JSPM token: $JSPM_GITHUB_AUTH_TOKEN
-      echo -----------------
-
       docker build --build-arg JSPM_GITHUB_AUTH_TOKEN="$JSPM_GITHUB_AUTH_TOKEN" -t $SHA_TAG .
       docker tag $SHA_TAG $BRANCH_TAG
       docker push $SHA_TAG
@@ -102,6 +98,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: 95b637ab991e50d6afe98e75dcccabe37f2d0f31012bc8c7b9121cdb990f86fe
+hmac: 9f7619e07f4deacb655bf7899804b3ebd26b8217b50403bedddcadfa37058eb8
 
 ...
