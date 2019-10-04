@@ -1,7 +1,8 @@
 import { inject, LogManager } from "aurelia-framework";
-const log = LogManager.getLogger("Q");
 import IdGenerator from "./IdGenerator.js";
 import Ajv from "ajv";
+import nanoid from "nanoid";
+const log = LogManager.getLogger("Q");
 const ajv = new Ajv();
 
 const objectTypesWithImplicitProperties = ["files", "json"];
@@ -14,12 +15,13 @@ export default class ObjectFromSchemaGenerator {
 
   getDefaultOrNull(schema) {
     if (schema.hasOwnProperty("default")) {
-      if (typeof schema.default === "object") {
-        return JSON.parse(JSON.stringify(schema.default));
-      }
+      if (typeof schema.default === "object") return JSON.parse(JSON.stringify(schema.default))
       return schema.default;
     }
     if (schema.hasOwnProperty("Q:default")) {
+      if (schema["Q:default"] === "nanoid10") return nanoid(10)
+      if (schema["Q:default"] === "nanoid16") return nanoid(16)
+
       if (schema["Q:default"] === "generatedId") {
         const id = this.idGenerator.getIdWithCurrentItemId();
         if (id === undefined || id === null) {
@@ -175,6 +177,9 @@ export default class ObjectFromSchemaGenerator {
     }
     // if this itemPart is a generatedId, we regenerate the id
     if (schema.hasOwnProperty("Q:default")) {
+      if (schema["Q:default"] === "nanoid10") return nanoid(10)
+      if (schema["Q:default"] === "nanoid16") return nanoid(16)
+
       if (schema["Q:default"] === "generatedId") {
         const id = this.idGenerator.getIdWithId(idForIdGenerator);
         if (id === undefined || id === null) {
