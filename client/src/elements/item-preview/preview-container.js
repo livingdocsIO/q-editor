@@ -26,7 +26,8 @@ export class PreviewContainer {
     this.element.setAttribute("id", this.id);
   }
 
-  attached() {
+  async attached() {
+    this.QServerBaseUrl = await qEnv.QServerBaseUrl;
     this.showPreview(this.renderingInfo);
   }
 
@@ -54,17 +55,22 @@ export class PreviewContainer {
     this.previewColor = color;
   }
 
+  async _toSophieUrl ({sophieModules}) {
+    if (!Array.isArray(sophieModules) || !sophieModules.length) return
+    const sophieConfig = await this.qConfig.get("sophie")
+    if (!sophieConfig || !sophieConfig.buildServiceBaseUrl) return
+
+    const sophieModulesString = sophieModules.map(({name, submodules}) => {
+      if (!submodules || !submodules.length) return name
+      return `${sophieModule.name}[${sophieModule.submodules.join("+")}]`
+    }).join(',')
+
+    return `${sophieConfig.buildServiceBaseUrl}/bundle/${sophieModulesString}.css`
+  }
+
   async showPreview(renderingInfo) {
-    if (!this.previewElement) {
-      return;
-    }
-
-    if (!renderingInfo) {
-      this.previewElement.innerHTML = "";
-      return;
-    }
-
-    const QServerBaseUrl = await qEnv.QServerBaseUrl;
+    if (!this.previewElement) return
+    if (!renderingInfo) renderingInfo = {}
 
     // remove all previously inserted elements
     while (this.insertedElements.length > 0) {
@@ -73,32 +79,16 @@ export class PreviewContainer {
     }
 
     // load sophie modules
-    if (Array.isArray(renderingInfo.sophieModules)) {
-      const sophieConfig = await this.qConfig.get("sophie");
-      if (sophieConfig && sophieConfig.buildServiceBaseUrl) {
-        const sophieModulesString = renderingInfo.sophieModules
-          .map(sophieModule => {
-            let moduleString = sophieModule.name;
-            if (
-              Array.isArray(sophieModule.submodules) &&
-              sophieModule.submodules.length > 0
-            ) {
-              moduleString = `${moduleString}[${sophieModule.submodules.join(
-                "+"
-              )}]`;
-            }
-            return moduleString;
-          })
-          .join(",");
-        let link = document.createElement("link");
-        link.type = "text/css";
-        link.rel = "stylesheet";
-        link.href = `${
-          sophieConfig.buildServiceBaseUrl
-        }/bundle/${sophieModulesString}.css`;
-        this.insertedElements.push(link);
-        this.element.shadowRoot.appendChild(link);
-      }
+    const sophieUrl = renderingInfo.sophieModules && await this._toSophieUrl(renderingInfo)
+    if (sophieUrl) {
+      let link = document.createElement("link");
+      link.type = "text/css";
+      link.rel = "stylesheet";
+      link.href = `${
+        sophieConfig.buildServiceBaseUrl
+      }/bundle/${sophieModulesString}.css`;
+      this.insertedElements.push(link);
+      this.element.shadowRoot.appendChild(link);
     }
 
     // load the stylesheets
@@ -106,7 +96,7 @@ export class PreviewContainer {
       renderingInfo.stylesheets
         .map(stylesheet => {
           if (!stylesheet.url && stylesheet.path) {
-            stylesheet.url = `${QServerBaseUrl}${stylesheet.path}`;
+            stylesheet.url = `${this.QServerBaseUrl}${stylesheet.path}`;
           }
           return stylesheet;
         })
@@ -141,7 +131,7 @@ export class PreviewContainer {
         .filter(script => script.loadInEditorPreview !== false)
         .map(script => {
           if (script.path) {
-            script.url = `${QServerBaseUrl}${script.path}`;
+            script.url = `${this.QServerBaseUrl}${script.path}`;
           }
           return script;
         });
