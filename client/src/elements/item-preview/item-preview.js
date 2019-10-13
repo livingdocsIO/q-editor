@@ -10,9 +10,9 @@ const log = LogManager.getLogger("Q");
 
 const defaultSizeOptions = [
   {
-    value: 290,
+    value: 800,
     min_height: 568,
-    label_i18n_key: "preview.small"
+    label_i18n_key: "preview.large"
   },
   {
     value: 560,
@@ -20,9 +20,9 @@ const defaultSizeOptions = [
     label_i18n_key: "preview.medium"
   },
   {
-    value: 800,
+    value: 290,
     min_height: 568,
-    label_i18n_key: "preview.large"
+    label_i18n_key: "preview.small"
   }
 ];
 
