@@ -15,7 +15,7 @@ steps:
       node_modules/.bin/gulp export
 
 - name: build
-  image: docker
+  image: livingdocs/docker-node
   volumes:
     - name: dockersocket
       path: /var/run/docker.sock
@@ -74,7 +74,7 @@ clone:
 
 steps:
 - name: tag
-  image: docker:18.06.3-ce-dind
+  image: livingdocs/docker-node
   volumes:
     - name: dockersocket
       path: /var/run/docker.sock
@@ -105,6 +105,6 @@ trigger:
   event: [tag]
 ---
 kind: signature
-hmac: 7bb1ebaea4b53f01c704f95596ea847dfc3a035ad9706bbd16cfe9072680ce3d
+hmac: 152b671dab048e7bab5b0b6f45ad6d72099cd2769f036021d5b0864fbd890896
 
 ...
