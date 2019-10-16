@@ -24,7 +24,7 @@ export class App {
 
   configureRouter(config, router) {
     this.router = router;
-    config.title = "NZZ Q";
+    config.title = "Q";
     config.addPreActivateStep(ConfigAvailableCheckStep);
     config.addAuthorizeStep(AuthorizeStep); // Add a route filter to the authorize extensibility point.
     config.addPipelineStep("postcomplete", ScrollToTopStep);
