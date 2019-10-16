@@ -42,6 +42,8 @@ export default class ItemStore {
   }
 
   async initFilters() {
+    this.filters = []
+    return
     this.filters = [
       {
         name: "tool",
