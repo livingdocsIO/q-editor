@@ -147,6 +147,11 @@ export async function configure(aurelia) {
   // if we have token based auth configured, load and configure aurelia-authentication plugin
   const qConfig = aurelia.container.get(QConfig);
   const authConfig = await qConfig.get("auth");
+
+  const tokenFromStorage = window.parent.localStorage.getItem('accessToken')
+  const token = tokenFromStorage && `${tokenFromStorage.replace(/(^"|"$)/g, '')}`
+  if (token) localStorage.setItem('aurelia_authentication', JSON.stringify({access_token: token}))
+
   if (authConfig && authConfig.type === "token") {
     // configure the aurelia-fetch-client interceptor to add the auth token to every request
     const loader = aurelia.container.get(Loader);

@@ -11,10 +11,6 @@ export default class Auth {
   loginCallbacks = [];
 
   constructor(user, qConfig, loader, diContainer, authService) {
-    const tokenFromStorage = window.parent.localStorage.getItem('accessToken')
-    const token = tokenFromStorage && `${tokenFromStorage.replace(/(^"|"$)/g, '')}`
-    localStorage.setItem('aurelia_authentication', JSON.stringify({access_token: token}))
-
     this.user = user;
     this.qConfig = qConfig;
     this.loader = loader;
@@ -23,9 +19,7 @@ export default class Auth {
   }
 
   async getAuthService() {
-    const AureliaAuthentication = await this.loader.loadModule(
-      "aurelia-authentication"
-    );
+    const AureliaAuthentication = await this.loader.loadModule("aurelia-authentication");
     const AuthService = AureliaAuthentication.AuthService;
     return this.diContainer.get(AuthService);
   }
