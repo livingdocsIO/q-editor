@@ -1,5 +1,5 @@
 {
-  "QServerBaseUrl": "http://localhost:9050",
+  "QServerBaseUrl": "https://localhost:9000/proxy/q-server",
   "SophieBuildService": "https://sophieservicestage-2cac.kxcdn.com/bundle/",
   "loginMessage": "login message",
   "devLogging": true,
