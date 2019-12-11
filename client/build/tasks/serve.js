@@ -1,5 +1,5 @@
-let gulp = require('gulp');
-let browserSync = require('browser-sync');
+const gulp = require('gulp');
+const browserSync = require('browser-sync');
 
 // this task utilizes the browsersync plugin
 // to create a dev server instance
