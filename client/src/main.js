@@ -3,8 +3,10 @@ window.clearTimeout(window.QLoadErrorTimeout);
 
 import { LogManager, Loader } from "aurelia-framework";
 import { ConsoleAppender } from "aurelia-logging-console";
+import { Authentication, FetchConfig } from 'aurelia-authentication';
 
-import { Backend } from "aurelia-i18n";
+// import { Backend } from "aurelia-i18n";
+import Backend from 'i18next-xhr-backend';
 
 import QConfig from "resources/QConfig.js";
 import QTargets from "resources/QTargets.js";
@@ -41,7 +43,29 @@ export async function configure(aurelia) {
   aurelia.use.singleton(User);
   aurelia.use.singleton(ItemActionController);
 
+  // AUTH SETUP
   const QServerBaseUrl = await qEnv.QServerBaseUrl;
+  const tokenFromStorage = window.parent.localStorage.getItem('accessToken');
+  const token = tokenFromStorage && `${tokenFromStorage.replace(/(^"|"$)/g, '')}`;
+
+  if (token) localStorage.setItem('aurelia_authentication', JSON.stringify({access_token: token}));
+  // configure the aurelia-fetch-client interceptor to add the auth token to every request
+  // const loader = aurelia.container.get(Loader);
+  // const AureliaAuthentication = await loader.loadModule(
+  //   "aurelia-authentication"
+  // );
+
+  // const FetchConfig = AureliaAuthentication.FetchConfig;
+  const fetchConfig = aurelia.container.get(FetchConfig);
+  fetchConfig.configure();
+  aurelia.use.plugin("aurelia-authentication", baseConfig => {
+    baseConfig.configure({
+      baseUrl: QServerBaseUrl,
+      loginUrl: "/authenticate",
+      loginRedirect: false,
+      logoutRedirect: false
+    });
+  });
 
   aurelia.use
     .standardConfiguration()
@@ -61,7 +85,8 @@ export async function configure(aurelia) {
     })
     .plugin("aurelia-i18n", async instance => {
       // register backend plugin
-      instance.i18next.use(Backend.with(aurelia.loader));
+      // instance.i18next.use(Backend.with(aurelia.loader));
+      instance.i18next.use(Backend);
 
       let availableLanguages = ["de", "en"];
       try {
@@ -80,6 +105,16 @@ export async function configure(aurelia) {
         .get(ToolsInfo)
         .getAvailableTools();
       const toolNames = configuredTools.map(tool => tool.name);
+
+      // wait for the user to be loaded so the authorization header gets sent along when loading the translation files
+      await aurelia.container
+        .get(User)
+        .loaded;
+
+      const auth = await aurelia.container
+        .get(Authentication);
+
+      const tokenForI18NRequests = `${auth.config.authTokenType} ${auth.getAccessToken()}`;
 
       // adapt options to your needs (see http://i18next.com/docs/options/)
       // make sure to return the promise of the setup method, in order to guarantee proper loading
@@ -102,6 +137,9 @@ export async function configure(aurelia) {
             mode: "cors",
             credentials: "same-origin",
             cache: "default"
+          },
+          customHeaders: {
+            authorization: tokenForI18NRequests
           }
         },
         attributes: ["t", "i18n"],
@@ -143,34 +181,6 @@ export async function configure(aurelia) {
         }
       });
     });
-
-  // if we have token based auth configured, load and configure aurelia-authentication plugin
-  const qConfig = aurelia.container.get(QConfig);
-  const authConfig = await qConfig.get("auth");
-
-  const tokenFromStorage = window.parent.localStorage.getItem('accessToken')
-  const token = tokenFromStorage && `${tokenFromStorage.replace(/(^"|"$)/g, '')}`
-  if (token) localStorage.setItem('aurelia_authentication', JSON.stringify({access_token: token}))
-
-  if (authConfig && authConfig.type === "token") {
-    // configure the aurelia-fetch-client interceptor to add the auth token to every request
-    const loader = aurelia.container.get(Loader);
-    const AureliaAuthentication = await loader.loadModule(
-      "aurelia-authentication"
-    );
-    const FetchConfig = AureliaAuthentication.FetchConfig;
-    const fetchConfig = aurelia.container.get(FetchConfig);
-    fetchConfig.configure();
-
-    aurelia.use.plugin("aurelia-authentication", baseConfig => {
-      baseConfig.configure({
-        baseUrl: QServerBaseUrl,
-        loginUrl: "/authenticate",
-        loginRedirect: false,
-        logoutRedirect: false
-      });
-    });
-  }
 
   const devLogging = await qEnv.devLogging;
   let logLevel = LogManager.logLevel.info;

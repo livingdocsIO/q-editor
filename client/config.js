@@ -48,6 +48,7 @@ System.config({
     "heyman/leaflet-areaselect": "github:heyman/leaflet-areaselect@master",
     "i18next": "npm:i18next@9.1.0",
     "i18next-fetch-backend": "npm:i18next-fetch-backend@0.0.1",
+    "i18next-xhr-backend": "npm:i18next-xhr-backend@3.2.2",
     "leaflet": "github:Leaflet/Leaflet@1.3.1",
     "leaflet-geocoder-mapzen": "npm:leaflet-geocoder-mapzen@1.8.0",
     "leaflet-search": "npm:leaflet-search@2.3.7",
@@ -97,6 +98,9 @@ System.config({
     },
     "github:jspm/nodelibs-vm@0.1.0": {
       "vm-browserify": "npm:vm-browserify@0.0.4"
+    },
+    "npm:@babel/runtime@7.7.6": {
+      "regenerator-runtime": "npm:regenerator-runtime@0.13.3"
     },
     "npm:ajv@5.5.2": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.1",
@@ -481,6 +485,9 @@ System.config({
     "npm:i18next-fetch-backend@0.0.1": {
       "i18next-xhr-backend": "npm:i18next-xhr-backend@1.5.1"
     },
+    "npm:i18next-xhr-backend@3.2.2": {
+      "@babel/runtime": "npm:@babel/runtime@7.7.6"
+    },
     "npm:i18next@9.1.0": {
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
@@ -589,6 +596,9 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.2",
       "stream-browserify": "npm:stream-browserify@1.0.0",
       "string_decoder": "npm:string_decoder@0.10.31"
+    },
+    "npm:regenerator-runtime@0.13.3": {
+      "path": "github:jspm/nodelibs-path@0.1.0"
     },
     "npm:ripemd160@2.0.2": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.1",
