@@ -1,3 +1,4 @@
+const basePath = require('./basePath.js')
 module.exports = [
   {
     method: 'GET',
@@ -10,7 +11,7 @@ module.exports = [
     },
     handler: {
       directory: {
-        path: './client/export/jspm_packages/npm',
+        path: `${basePath}/jspm_packages/npm`,
         redirectToSlash: true,
         index: true
       }
@@ -27,7 +28,7 @@ module.exports = [
     },
     handler: {
       directory: {
-        path: './client/export/jspm_packages/github',
+        path: `${basePath}/jspm_packages/github`,
         redirectToSlash: true,
         index: true
       }
@@ -38,7 +39,7 @@ module.exports = [
     path: '/jspm_packages/{path*}',
     handler: {
       directory: {
-        path: './client/export/jspm_packages',
+        path: `${basePath}/jspm_packages`,
         redirectToSlash: true,
         index: true
       }
@@ -48,7 +49,7 @@ module.exports = [
     method: 'GET',
     path: '/config.js',
     handler: {
-      file: './client/export/config.js'
+      file: `${basePath}/config.js`
     }
   }
 ]

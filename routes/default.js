@@ -1,3 +1,4 @@
+const basePath = require('./basePath.js')
 module.exports = {
   method: "GET",
   path: "/{path*}",
@@ -9,7 +10,7 @@ module.exports = {
   },
   handler: {
     directory: {
-      path: "./client/export",
+      path: basePath,
       redirectToSlash: true
     }
   }

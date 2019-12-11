@@ -1,4 +1,5 @@
 const fs = require("fs");
+const basePath = require('./basePath.js')
 
 module.exports = (config) => {
   const env = {
@@ -7,7 +8,7 @@ module.exports = (config) => {
     bodyEndMarkup: process.env.BODY_END_MARKUP || ""
   };
 
-  const indexFile = fs.readFileSync("./client/export/index.html", {
+  const indexFile = fs.readFileSync(`${basePath}/index.html`, {
     encoding: "utf-8"
   });
 
