@@ -76,7 +76,9 @@ export class ItemPreview {
           // Only update value if it is different from previous value
           if (target[property] !== value) {
             target[property] = value;
-            this.handleSizeChange();
+            if (property === 'width') {
+              this.handleSizeChange();
+            }
           }
           return true;
         }
@@ -96,6 +98,7 @@ export class ItemPreview {
           const previewSize = previewSizes[previewSizeName];
           const sizeOption = {
             value: previewSize.value,
+            scaleToFit: previewSize.scaleToFit,
             min_height: previewSize.min_height || 568,
             label_i18n_key: `preview.${previewSizeName}`
           };
@@ -108,7 +111,8 @@ export class ItemPreview {
         this.sizeOptions = defaultSizeOptions;
       }
 
-      // set the default preview width to the most narrow variant
+      // set the default preview width to the first variant
+      this.previewWidthProxy.scaleToFit = this.sizeOptions[0].scaleToFit;
       this.previewWidthProxy.width = this.sizeOptions[0].value;
 
       const availableTargets = await this.qTargets.get("availableTargets");
@@ -168,7 +172,7 @@ export class ItemPreview {
   }
 
   dataChanged(newValue, oldValue) {
-    this.sizeOptionsChecked = [this.previewWidthProxy.width];
+    this.sizeOptionsChecked = [this.getCurrentSizeOption()];
     this.applyPreviewHint();
     this.loadPreview();
   }
@@ -199,7 +203,7 @@ export class ItemPreview {
 
   areAllSizeOptionsChecked() {
     for (const sizeOption of this.sizeOptions) {
-      if (!this.sizeOptionsChecked.includes(sizeOption.value)) {
+      if (!this.sizeOptionsChecked.includes(sizeOption)) {
         return false;
       }
     }
@@ -224,13 +228,16 @@ export class ItemPreview {
   }
 
   handleSizeChange() {
-    this.sizeOptionsChecked.push(this.previewWidthProxy.width);
+    const currentSizeOption = this.getCurrentSizeOption();
+    this.sizeOptionsChecked.push(currentSizeOption);
     this.applyPreviewHint();
     // set the min-height if configured;
-    this.element.style.setProperty(
-      "--q-preview-min-height",
-      `${this.getCurrentSizeOption().min_height}px`
-    );
+    if (currentSizeOption.min_height) {
+      this.element.style.setProperty(
+        "--q-preview-min-height",
+        `${currentSizeOption.min_height}px`
+      );
+    }
     this.loadPreview();
   }
 
@@ -239,7 +246,7 @@ export class ItemPreview {
       size: {
         width: [
           {
-            value: this.previewWidthProxy.width,
+            value: this.previewContainer.shadowRoot.querySelector('.preview-element').getBoundingClientRect().width,
             comparison: "="
           }
         ]
@@ -255,9 +262,9 @@ export class ItemPreview {
           }?ignoreInactive=true&noCache=true&toolRuntimeConfig=${encodeURI(
             JSON.stringify(toolRuntimeConfig)
           )}`
-        , {
-          credentials: 'include'
-        });
+          , {
+            credentials: 'include'
+          });
       } else if (this.data) {
         const body = {
           item: this.data,
