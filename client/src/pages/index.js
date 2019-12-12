@@ -49,6 +49,12 @@ export class Index {
     return this.user.loaded;
   }
 
+  async activate() {
+    const uiBehaviorConfig = await this.qConfig.get('uiBehavior');
+    // the default is to show the user menu, only if it is disabled, we hide it
+    this.showUserMenu = uiBehaviorConfig.userMenu === false ? false : true;
+  }
+
   async attached() {
     if (!this.initialised) {
       this.applyUserDefinedFilters();
