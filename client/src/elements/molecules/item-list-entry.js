@@ -5,6 +5,7 @@ import ItemActionController from "resources/ItemActionController";
 @inject(ToolsInfo, Element, User, ItemActionController)
 export class ItemListEntry {
   @bindable item;
+  @bindable hideEditUserName;
 
   constructor(toolsInfo, element, user, itemActionController) {
     this.toolsInfo = toolsInfo;

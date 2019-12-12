@@ -1,10 +1,11 @@
-<template bindable="items">
+<template bindable="items, hideCreatedBy">
   <require from="./items-list.css"></require>
   <require from="../molecules/item-list-entry.js"></require>
   <div show.bind="items.length > 0" class="items-list__header q-text-small">
     <span>${'itemsList.title' & t}</span>
-    <span>${'itemsList.author' & t}</span>
+    <span if.bind="!hideEditUserName">${'itemsList.author' & t}</span>
     <span>${'itemsList.updated' & t}</span>
   </div>
-  <item-list-entry show.bind="items.length > 0" repeat.for="item of items" item.bind="item"></item-list-entry>
+  <item-list-entry show.bind="items.length > 0" repeat.for="item of items" item.bind="item"
+    hide-edit-user-name.one-way="hideEditUserName"></item-list-entry>
 </template>

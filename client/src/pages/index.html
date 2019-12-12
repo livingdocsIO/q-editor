@@ -5,7 +5,7 @@
     <icon-logo class="index__logo" if.bind="enoughNewItems" slot="logo" click.delegate="reloadItems()"></icon-logo>
     <icon-m class="index__logo" if.bind="!enoughNewItems" slot="logo" click.delegate="reloadItems()"></icon-m>
     <language-switcher slot="language-switcher"></language-switcher>
-    <button-secondary slot="account-button" if.bind="user.isLoggedIn && showUserMenu"
+    <button-secondary slot="account-button" if.bind="user.isLoggedIn && uiBehaviorConfig.userMenu !== false"
       click.delegate="showAccountModal()">${user.data.initials}</button-secondary>
   </q-bar>
   <main class="index">
@@ -27,7 +27,8 @@
 
     <items-filter filters.bind="availableFilters" change.call="filterChanged()"></items-filter>
 
-    <items-list items.bind="items" ref="itemsListElement"></items-list>
+    <items-list items.bind="items" hide-edit-user-name.bind="uiBehaviorConfig.hideEditUserName" ref="itemsListElement">
+    </items-list>
     <div class="infitite-scrolling-sentinel" ref="infiniteScrollingSentinel"></div>
     <div class="index__empty-list-message" if.bind="items.length === 0 && !itemsLoading">
       <h4>${'itemsList.empty' & t}</h4>
