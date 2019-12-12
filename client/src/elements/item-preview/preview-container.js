@@ -5,16 +5,12 @@ import QConfig from "resources/QConfig.js";
 @useShadowDOM()
 @inject(Element, QConfig)
 export class PreviewContainer {
-  @bindable
-  width;
-  @bindable
-  renderingInfo;
-  @bindable
-  loadingStatus;
-  @bindable
-  target;
-  @bindable
-  error;
+  @bindable width;
+  @bindable scaleToFit;
+  @bindable renderingInfo;
+  @bindable loadingStatus;
+  @bindable target;
+  @bindable error;
 
   insertedElements = [];
   stylesheetRules = [];
@@ -24,15 +20,45 @@ export class PreviewContainer {
     this.qConfig = qConfig;
     this.id = `preview-container-${Math.floor(Math.random() * 10 ** 9)}`;
     this.element.setAttribute("id", this.id);
+    this.currentScaleFactor = 1;
   }
 
   async attached() {
     this.QServerBaseUrl = await qEnv.QServerBaseUrl;
+    this.initScaleToFit();
     this.showPreview(this.renderingInfo);
   }
 
+  async detached() {
+    this.unobservePreviewResize();
+  }
+
+  widthChanged(width) {
+    if (!width) {
+      return;
+    }
+    if (Number.isNaN(parseFloat(width))) {
+      if (width === 'auto') {
+        this.cssWidth = '100%';
+      } else if (width.endsWith('%')) {
+        this.cssWidth = width;
+      }
+    } else {
+      this.cssWidth = `${width}px`;
+    }
+  }
+
+  scaleToFitChanged() {
+    this.initScaleToFit();
+  }
+
   renderingInfoChanged(renderingInfo) {
-    this.showPreview(this.renderingInfo);
+    this.unobservePreviewResize();
+    if (this.previewHolder) {
+      this.previewHolder.innerHTML = "";
+    }
+    this.initScaleToFit();
+    this.showPreview(renderingInfo);
   }
 
   targetChanged() {
@@ -55,22 +81,22 @@ export class PreviewContainer {
     this.previewColor = color;
   }
 
-  async _toSophieUrl ({sophieModules}) {
-    if (!Array.isArray(sophieModules) || !sophieModules.length) return
-    const sophieConfig = await this.qConfig.get("sophie")
-    if (!sophieConfig || !sophieConfig.buildServiceBaseUrl) return
+  async _toSophieUrl({sophieModules}) {
+    if (!Array.isArray(sophieModules) || !sophieModules.length) return;
+    const sophieConfig = await this.qConfig.get("sophie");
+    if (!sophieConfig || !sophieConfig.buildServiceBaseUrl) return;
 
     const sophieModulesString = sophieModules.map(({name, submodules}) => {
-      if (!submodules || !submodules.length) return name
-      return `${sophieModule.name}[${sophieModule.submodules.join("+")}]`
-    }).join(',')
+      if (!submodules || !submodules.length) return name;
+      return `${sophieModule.name}[${sophieModule.submodules.join("+")}]`;
+    }).join(',');
 
-    return `${sophieConfig.buildServiceBaseUrl}/bundle/${sophieModulesString}.css`
+    return `${sophieConfig.buildServiceBaseUrl}/bundle/${sophieModulesString}.css`;
   }
 
   async showPreview(renderingInfo) {
-    if (!this.previewElement) return
-    if (!renderingInfo) renderingInfo = {}
+    if (!this.previewHolder) return;
+    if (!renderingInfo) renderingInfo = {};
 
     // remove all previously inserted elements
     while (this.insertedElements.length > 0) {
@@ -79,7 +105,7 @@ export class PreviewContainer {
     }
 
     // load sophie modules
-    const sophieUrl = renderingInfo.sophieModules && await this._toSophieUrl(renderingInfo)
+    const sophieUrl = renderingInfo.sophieModules && await this._toSophieUrl(renderingInfo);
     if (sophieUrl) {
       let link = document.createElement("link");
       link.type = "text/css";
@@ -120,9 +146,9 @@ export class PreviewContainer {
 
     // add the markup if any
     if (renderingInfo.markup) {
-      this.previewElement.innerHTML = renderingInfo.markup;
+      this.previewHolder.innerHTML = renderingInfo.markup;
     } else {
-      this.previewElement.innerHTML = "";
+      this.previewHolder.innerHTML = "";
     }
 
     // load the scripts one after the other
@@ -178,4 +204,93 @@ export class PreviewContainer {
       callback();
     }
   }
+
+  initScaleToFit() {
+    if (!this.previewHolder) {
+      return;
+    }
+    if (this.scaleToFit) {
+      this.currentScaleFactor = 1;
+      // set the applying state so opacity can fade
+      this.applyingScaleToFit = true;
+      this.observePreviewResize(this.applyScaleToFit.bind(this));
+      this.applyScaleToFit();
+    } else {
+      this.resetScaleToFit();
+    }
+  }
+
+  applyScaleToFit() {
+    const elementToScale = this.previewHolder.firstChild;
+    if (!elementToScale) {
+      return;
+    }
+    const elementToScaleWidth = elementToScale.getBoundingClientRect().width;
+    // the element might not yet have a width, in this case we do not want to do anything just yet
+    if (!elementToScaleWidth) {
+      return;
+    }
+
+    // we need to calculate using the current scale factor since getBoundingClientRect is computed after any transforms
+    const scaleFactor = this.previewHolder.getBoundingClientRect().width / elementToScaleWidth * this.currentScaleFactor;
+
+    // nothing to do if scaleFactor didn't change
+    if (scaleFactor === this.currentScaleFactor) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      elementToScale.style.display = 'block';
+      elementToScale.style.transformOrigin = '0 0';
+      elementToScale.style.transform = `scale(${scaleFactor})`;
+      elementToScale.style.webkitTransform = `scale(${scaleFactor})`;
+      elementToScale.style.MozTransform = `scale(${scaleFactor})`;
+      this.currentScaleFactor = scaleFactor;
+      this.applyingScaleToFit = false;
+    });
+  }
+
+  resetScaleToFit() {
+    const elementToScale = this.previewHolder.firstChild;
+    if (!elementToScale) {
+      return;
+    }
+    elementToScale.style.transform = `none`;
+    elementToScale.style.webkitTransform = `none`;
+    elementToScale.style.MozTransform = `none`;
+    this.unobservePreviewResize();
+  }
+
+  async observePreviewResize(cb) {
+    if (!this.resizeObserver) {
+      this.resizeObserver = new ResizeObserver(entries => {
+        cb();
+      });
+      this.resizeObserver.observe(this.previewHolder);
+      await this.graphicElementAvailable();
+      this.resizeObserver.observe(this.previewHolder.firstChild);
+    }
+  }
+
+  unobservePreviewResize() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = undefined;
+    }
+  }
+
+  rafAsync() {
+    return new Promise(resolve => {
+      requestAnimationFrame(resolve);
+    });
+  }
+
+  async graphicElementAvailable() {
+    while (this.previewHolder.firstChild === null) {
+      await this.rafAsync();
+    }
+    return true;
+  }
+
+
 }
