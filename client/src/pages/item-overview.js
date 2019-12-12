@@ -43,6 +43,10 @@ export class ItemOverview {
     this.user = user;
   }
 
+  async activate() {
+    this.uiBehaviorConfig = this.qConfig.get('uiBehavior');
+  }
+
   async attached() {
     this.isToolAvailable = await this.toolsInfo.isToolWithNameAvailable(
       this.item.conf.tool

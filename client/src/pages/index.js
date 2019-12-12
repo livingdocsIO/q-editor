@@ -50,9 +50,7 @@ export class Index {
   }
 
   async activate() {
-    const uiBehaviorConfig = await this.qConfig.get('uiBehavior');
-    // the default is to show the user menu, only if it is disabled, we hide it
-    this.showUserMenu = uiBehaviorConfig.userMenu === false ? false : true;
+    this.uiBehaviorConfig = await this.qConfig.get('uiBehavior');
   }
 
   async attached() {
