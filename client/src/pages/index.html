@@ -35,10 +35,9 @@
     </div>
     <q-loader if.bind="itemsLoading"></q-loader>
 
-    <div class="index__statistics q-text-small q-text--ultralight" click.delegate="scrollToTop()">
-      <span if.bind="!enoughNewItems && statsValues" t="statistics.tooFewNewGraphics"
-        t-params.bind="statsValues"></span>
-      <span if.bind="enoughNewItems && statsValues" t="statistics.enoughNewGraphics" t-params.bind="statsValues"></span>
+    <div class="index__statistics q-text-small q-text--ultralight" click.delegate="scrollToTop()" if.bind="statsValues">
+      <span if.bind="!enoughNewItems" t="statistics.tooFewNewGraphics" t-params.bind="statsValues"></span>
+      <span if.bind="enoughNewItems" t="statistics.enoughNewGraphics" t-params.bind="statsValues"></span>
     </div>
 
   </main>
