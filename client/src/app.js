@@ -1,8 +1,10 @@
-import { inject } from "aurelia-framework";
+import { inject, LogManager } from "aurelia-framework";
 import { Redirect, Router } from "aurelia-router";
 import User from "resources/User.js";
 import QConfig from "resources/QConfig.js";
 import qEnv from "resources/qEnv.js";
+
+const log = LogManager.getLogger("Q");
 
 @inject(QConfig, User, Router)
 export class App {
@@ -130,26 +132,38 @@ class AuthorizeStep {
     this.qConfig = qConfig;
   }
 
-  run(navigationInstruction, next) {
+  async run(navigationInstruction, next) {
     // Check if the route has an "auth" key
     if (navigationInstruction.getAllInstructions().some(i => i.config.auth)) {
-      return this.user.loaded
-        .then(() => {
-          if (!this.user.isLoggedIn) {
-            this.redirectBackAfterLoginRoute = navigationInstruction.fragment;
-            return next.cancel(new Redirect("login"));
+      try {
+        await this.user.loaded;
+
+        if (!this.user.isLoggedIn) {
+          const authConfig = await this.qConfig.get('auth');
+          if (authConfig.login && authConfig.login.redirect) {
+            const url = new URL(authConfig.login.redirect, window.location.origin);
+            // only allow redirects to the same origin
+            if (url.href.startsWith(window.location.origin)) {
+              window.location.href = url.href;
+              return;
+            }
+            log.error(new Error('Redirect to different origins is not allowed.'));
           }
-          if (this.redirectBackAfterLoginRoute) {
-            let route = this.redirectBackAfterLoginRoute;
-            delete this.redirectBackAfterLoginRoute;
-            return next.cancel(new Redirect(route));
-          }
-          return next();
-        })
-        .catch(e => {
+
           this.redirectBackAfterLoginRoute = navigationInstruction.fragment;
           return next.cancel(new Redirect("login"));
-        });
+        }
+
+        if (this.redirectBackAfterLoginRoute) {
+          let route = this.redirectBackAfterLoginRoute;
+          delete this.redirectBackAfterLoginRoute;
+          return next.cancel(new Redirect(route));
+        }
+        return next();
+      } catch (e) {
+        this.redirectBackAfterLoginRoute = navigationInstruction.fragment;
+        return next.cancel(new Redirect("login"));
+      }
     }
 
     return next();
