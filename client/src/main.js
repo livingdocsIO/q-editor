@@ -1,11 +1,10 @@
 // clear the load error timeout
 window.clearTimeout(window.QLoadErrorTimeout);
 
-import { LogManager, Loader } from "aurelia-framework";
+import { LogManager } from "aurelia-framework";
 import { ConsoleAppender } from "aurelia-logging-console";
 import { Authentication, FetchConfig } from 'aurelia-authentication';
 
-// import { Backend } from "aurelia-i18n";
 import Backend from 'i18next-xhr-backend';
 
 import QConfig from "resources/QConfig.js";
@@ -49,13 +48,8 @@ export async function configure(aurelia) {
   const token = tokenFromStorage && `${tokenFromStorage.replace(/(^"|"$)/g, '')}`;
 
   if (token) localStorage.setItem('aurelia_authentication', JSON.stringify({access_token: token}));
-  // configure the aurelia-fetch-client interceptor to add the auth token to every request
-  // const loader = aurelia.container.get(Loader);
-  // const AureliaAuthentication = await loader.loadModule(
-  //   "aurelia-authentication"
-  // );
 
-  // const FetchConfig = AureliaAuthentication.FetchConfig;
+  // configure the aurelia-fetch-client interceptor to add the auth token to every request
   const fetchConfig = aurelia.container.get(FetchConfig);
   fetchConfig.configure();
   aurelia.use.plugin("aurelia-authentication", baseConfig => {
@@ -85,7 +79,6 @@ export async function configure(aurelia) {
     })
     .plugin("aurelia-i18n", async instance => {
       // register backend plugin
-      // instance.i18next.use(Backend.with(aurelia.loader));
       instance.i18next.use(Backend);
 
       let availableLanguages = ["de", "en"];
