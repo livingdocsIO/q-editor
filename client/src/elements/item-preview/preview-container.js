@@ -37,11 +37,11 @@ export class PreviewContainer {
     if (!width) {
       return;
     }
-    if (Number.isNaN(parseFloat(width))) {
+    if (Number.isNaN(Number(width))) {
       if (width === 'auto') {
         this.cssWidth = '100%';
-      } else if (width.endsWith('%')) {
-        this.cssWidth = width;
+      } else {
+        throw new Error(`Unsupported width value '${width}'`);
       }
     } else {
       this.cssWidth = `${width}px`;
