@@ -13,7 +13,7 @@ module.exports = (config) => {
   });
 
   const compiledIndexFileContent = indexFile
-    .replace(/^\s*<base([^>]*)>/, `<base href="${config.basePath || '/'}">\n`)
+    .replace(/\s*<base([^>]*)>/, `\n<base href="${config.basePath || '/'}">\n`)
     .replace("<!-- HEAD_MARKUP -->", env.headMarkup)
     .replace("<!-- BODY_START_MARKUP -->", env.bodyStartMarkup)
     .replace("<!-- BODY_END_MARKUP -->", env.bodyEndMarkup);
