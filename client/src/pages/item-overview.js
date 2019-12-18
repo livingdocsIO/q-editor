@@ -44,7 +44,7 @@ export class ItemOverview {
   }
 
   async activate() {
-    this.uiBehaviorConfig = this.qConfig.get('uiBehavior');
+    this.uiBehaviorConfig = await this.qConfig.get("uiBehavior");
   }
 
   async attached() {
