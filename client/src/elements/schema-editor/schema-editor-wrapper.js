@@ -163,7 +163,7 @@ export class SchemaEditorWrapper {
 
   async getDynamicSchema(dynamicSchema) {
     try {
-      return await this.toolEndpointChecker.check(dynamicSchema.config);
+      return await this.toolEndpointChecker.check(dynamicSchema.config, this.pointer);
     } catch (e) {
       throw new Error(
         `failed to get dynamicSchema for ${JSON.stringify(dynamicSchema)} ${e}`
