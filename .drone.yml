@@ -5,12 +5,16 @@ name: build-q-editor
 steps:
 - name: install
   image: node:9-alpine
+  environment:
+    GH_TOKEN:
+      from_secret: GH_TOKEN
   commands:
     - |
       apk add --no-cache git
       npm install
       cd client
       npm install
+      node_modules/.bin/jspm config registries.github.auth $GH_TOKEN
       node_modules/.bin/jspm install
       node_modules/.bin/gulp export
 
