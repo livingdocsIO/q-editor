@@ -28,7 +28,7 @@ export default class ToolEndpointChecker {
     }
   }
 
-  async check(config) {
+  async check(config, pointer) {
     const QServerBaseUrl = await qEnv.QServerBaseUrl;
     const item = this.currentItemProvider.getCurrentItem().conf;
     const toolRequestBaseUrl = `${QServerBaseUrl}/tools/${item.tool}`;
@@ -46,6 +46,40 @@ export default class ToolEndpointChecker {
       }
       options.body = JSON.stringify(dataForEndpoint);
     }
+
+    if (Array.isArray(config.pointers) && config.pointers.length > 0) {
+      const dataForEndpoint = {
+        data: config.pointers.map(ptr => {
+          // handle parts of relative pointers here: https://tools.ietf.org/id/draft-handrews-relative-json-pointer-00.html
+          if (Number(ptr)) {
+            ptr = pointer.split('/').slice(0, Number(ptr) * -1).join('/');
+          }
+          return this.currentItemProvider.getDataByPointer(ptr);
+        })
+      };
+      options.method = "POST";
+      if (config.hasOwnProperty("options")) {
+        dataForEndpoint.options = config.options;
+      }
+      options.body = JSON.stringify(dataForEndpoint);
+    }
+
+    if (config.pointer) {
+      let ptr = config.pointer;
+      // handle parts of relative pointers here: https://tools.ietf.org/id/draft-handrews-relative-json-pointer-00.html
+      if (Number(ptr)) {
+        ptr = pointer.split('/').slice(0, Number(ptr) * -1).join('/');
+      }
+      const dataForEndpoint = {
+        data: this.currentItemProvider.getDataByPointer(ptr)
+      };
+      options.method = "POST";
+      if (config.hasOwnProperty("options")) {
+        dataForEndpoint.options = config.options;
+      }
+      options.body = JSON.stringify(dataForEndpoint);
+    }
+
     const response = await fetch(
       `${toolRequestBaseUrl}/${config.endpoint}`,
       options

@@ -6,6 +6,7 @@ System.config({
     "github:*": "jspm_packages/github/*",
     "npm:*": "jspm_packages/npm/*"
   },
+
   map: {
     "ajv": "npm:ajv@5.5.2",
     "array2d": "npm:array2d@0.0.5",
@@ -49,6 +50,7 @@ System.config({
     "i18next": "npm:i18next@9.1.0",
     "i18next-fetch-backend": "npm:i18next-fetch-backend@0.0.1",
     "i18next-xhr-backend": "npm:i18next-xhr-backend@3.2.2",
+    "jsonpointer": "npm:jsonpointer@4.0.1",
     "leaflet": "github:Leaflet/Leaflet@1.3.1",
     "leaflet-geocoder-mapzen": "npm:leaflet-geocoder-mapzen@1.8.0",
     "leaflet-search": "npm:leaflet-search@2.3.7",
@@ -591,7 +593,7 @@ System.config({
       "buffer": "github:jspm/nodelibs-buffer@0.1.1",
       "core-util-is": "npm:core-util-is@1.0.2",
       "events": "github:jspm/nodelibs-events@0.1.1",
-      "inherits": "npm:inherits@2.0.4",
+      "inherits": "npm:inherits@2.0.1",
       "isarray": "npm:isarray@0.0.1",
       "process": "github:jspm/nodelibs-process@0.1.2",
       "stream-browserify": "npm:stream-browserify@1.0.0",
@@ -620,7 +622,7 @@ System.config({
     },
     "npm:stream-browserify@1.0.0": {
       "events": "github:jspm/nodelibs-events@0.1.1",
-      "inherits": "npm:inherits@2.0.4",
+      "inherits": "npm:inherits@2.0.1",
       "readable-stream": "npm:readable-stream@1.1.14"
     },
     "npm:string_decoder@0.10.31": {
