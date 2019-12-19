@@ -14,6 +14,8 @@ export class SchemaEditorObject {
   notifications;
   @bindable
   showNotifications;
+  @bindable
+  pointer;
 
   options = {
     expandable: false
@@ -35,6 +37,13 @@ export class SchemaEditorObject {
       this.data = {};
     }
     this.applyOptions();
+  }
+
+  getPointer(propertyName) {
+    if (this.pointer) {
+      return `${this.pointer}/${propertyName}`;
+    }
+    return `/${propertyName}`;
   }
 
   schemaChanged() {

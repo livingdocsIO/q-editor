@@ -11,6 +11,8 @@ const log = LogManager.getLogger("Q");
 @inject(NotificationChecker, AvailabilityChecker, ToolEndpointChecker, Element)
 export class SchemaEditorWrapper {
   @bindable
+  pointer;
+  @bindable
   schema;
   @bindable
   data;

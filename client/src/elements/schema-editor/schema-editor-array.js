@@ -12,6 +12,7 @@ export class SchemaEditorArray {
   @bindable change;
   @bindable notifications;
   @bindable showNotifications;
+  @bindable pointer;
 
   arrayEntryOptions = [];
 
@@ -33,6 +34,10 @@ export class SchemaEditorArray {
         this.change();
       }
     };
+  }
+
+  getPointer(index) {
+    return `${this.pointer}/${index}`;
   }
 
   dataChanged() {

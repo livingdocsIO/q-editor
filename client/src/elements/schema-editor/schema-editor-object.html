@@ -34,6 +34,7 @@
     >
       <schema-editor-wrapper
         if.bind="!$parent.schema.properties[propertyName]['Q:options'] || !$parent.schema.properties[propertyName]['Q:options'].hideInEditor"
+        pointer.one-way="getPointer(propertyName)"
         schema.bind="$parent.schema.properties[propertyName]"
         data.two-way="$parent.data[propertyName]"
         change.bind="$parent.change"
@@ -46,6 +47,7 @@
 
     <schema-editor-wrapper
       if.bind="(collapsedState === 'expanded' || !options.expandable) && (!$parent.schema.properties[propertyName]['Q:options'] || !$parent.schema.properties[propertyName]['Q:options'].hideInEditor) && getType($parent.schema.properties[propertyName]) !== 'object' && getType($parent.schema.properties[propertyName]) !== 'array'"
+      pointer.one-way="getPointer(propertyName)"
       schema.bind="$parent.schema.properties[propertyName]"
       data.two-way="$parent.data[propertyName]"
       change.bind="$parent.change"
