@@ -286,6 +286,8 @@ There are three types of availability-checks:
 
 Dynamic Schema allows you to alter the schema for a specific property based on dynamic data. This is for example used in the charts tool to change the maxItems of an array based on the data
 
+##### Using config.fields
+An object `item` is sent to the endpoint containing the complete structure but only the fields defined in `fields`
 ```json
 "highlightDataSeries": {
   "title": "Hervorhebungen von Datenreihen",
@@ -296,6 +298,25 @@ Dynamic Schema allows you to alter the schema for a specific property based on d
       "config": {
         "endpoint": "dynamic-schema/highlighDataSeries",
         "fields": ["data"]
+      }
+    }
+  }
+}
+```
+
+##### Using config.pointer / config.pointers
+The endpoint receives an object `data` in the payload that contains the data at the specifiec json pointer. Basic relativ pointers are supported to work with arrays. See: https://tools.ietf.org/id/draft-handrews-relative-json-pointer-00.html
+Use `config.pointers` as an array if you need it. `data` in payload will be an array in the same order as specified in the schema.
+```json
+"highlightDataSeries": {
+  "title": "Hervorhebungen von Datenreihen",
+  "type": "array",
+  "Q:options": {
+    "dynamicSchema": {
+      "type": "ToolEndpoint",
+      "config": {
+        "endpoint": "dynamic-schema/highlighDataSeries",
+        "pointer": "/some/json/pointer"
       }
     }
   }
