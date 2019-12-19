@@ -2,7 +2,7 @@
   <require from="./schema-editor-wrapper.css"></require>
   <div if.bind="getType(schema) === 'object'" class="schema-editor-block">
     <require from="./schema-editor-object"></require>
-    <schema-editor-object\
+    <schema-editor-object
       pointer.one-way="pointer"
       schema.bind="schema"
       data.two-way="data"
