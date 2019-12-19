@@ -26,7 +26,7 @@
 
   <div
     if.bind="schema.properties"
-    repeat.for="propertyName of schema.properties | keys"
+    repeat.for="propertyName of schema.properties | keys | filter: {remove: '__observers__'}"
   >
     <fieldset
       if.bind="(collapsedState === 'expanded' || !options.expandable) && (getType($parent.schema.properties[propertyName]) === 'object' || getType($parent.schema.properties[propertyName]) === 'array')"
