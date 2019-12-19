@@ -30,6 +30,7 @@ schema-editor-array {
   margin-left: var(--q-space-base);
   margin-top: auto;
   margin-bottom: auto;
+  width: auto;
 }
 
 .schema-editor-array__entry-container--expandable
