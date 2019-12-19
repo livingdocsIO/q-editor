@@ -24,7 +24,6 @@ export default class CurrentItemProvider {
   }
 
   getDataByPointer(pointer) {
-    const ptr = jsonPointer.compile(pointer);
-    return ptr.get(this.item.conf);
+    return jsonPointer.get(this.item.conf, pointer);
   }
 }
