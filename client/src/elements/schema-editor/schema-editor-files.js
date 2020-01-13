@@ -2,10 +2,11 @@ import { bindable, inject, Loader, LogManager } from "aurelia-framework";
 import { Notification } from "aurelia-notification";
 import { I18N } from "aurelia-i18n";
 import qEnv from "resources/qEnv.js";
+import QConfig from "resources/QConfig";
 import { AuthService } from "aurelia-authentication";
 const log = LogManager.getLogger("Q");
 
-@inject(Loader, AuthService, Notification, I18N)
+@inject(Loader, AuthService, Notification, I18N, QConfig)
 export class SchemaEditorFiles {
   @bindable
   schema;
@@ -22,11 +23,12 @@ export class SchemaEditorFiles {
     maxFiles: null
   };
 
-  constructor(loader, authService, notification, i18n) {
+  constructor(loader, authService, notification, i18n, qConfig) {
     this.loader = loader;
     this.authService = authService;
     this.notification = notification;
     this.i18n = i18n;
+    this.qConfig = qConfig;
   }
 
   schemaChanged() {
@@ -167,7 +169,12 @@ export class SchemaEditorFiles {
     this.preloadExistingFiles();
   }
 
-  preloadExistingFiles() {
+  async preloadExistingFiles() {
+    this.schemaEditorConfig = await this.qConfig.get("schemaEditor");
+    let fileBaseUrl;
+    if (this.schemaEditorConfig.files && this.schemaEditorConfig.files.fileRequestBaseUrl) {
+      fileBaseUrl = this.schemaEditorConfig.files.fileRequestBaseUrl.host + this.schemaEditorConfig.files.fileRequestBaseUrl.path;
+    }
     const files = [];
     if (this.data && this.schema.type === "object") {
       files.push(this.data);
@@ -177,9 +184,9 @@ export class SchemaEditorFiles {
     }
     // preload images already uploaded
     files.forEach((file, index) => {
-      if (file && file.url) {
+      if (file && (file.url || file.key && fileBaseUrl)) {
         const mockFile = {
-          name: file.url,
+          name: file.key,
           size: file.size || 0,
           accepted: true
         };
@@ -191,7 +198,7 @@ export class SchemaEditorFiles {
         this.dropzone.files.push(mockFile);
         this.dropzone.emit("addedfile", mockFile);
         if (file.type && file.type.includes("image/")) {
-          mockFile.dataURL = file.url; // needed for dropzone to create the thumbnail in a canvas
+          mockFile.dataURL = fileBaseUrl ? `${fileBaseUrl}/${file.key}` : file.url; // needed for dropzone to create the thumbnail in a canvas
           this.dropzone.createThumbnailFromUrl(
             mockFile,
             this.dropzoneOptions.thumbnailWidth,
