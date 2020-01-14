@@ -1,4 +1,5 @@
 import { bindable, inject, Loader, LogManager } from "aurelia-framework";
+import { HttpClient } from "aurelia-fetch-client";
 import { Notification } from "aurelia-notification";
 import { I18N } from "aurelia-i18n";
 import qEnv from "resources/qEnv.js";
@@ -6,7 +7,16 @@ import QConfig from "resources/QConfig";
 import { AuthService } from "aurelia-authentication";
 const log = LogManager.getLogger("Q");
 
-@inject(Loader, AuthService, Notification, I18N, QConfig)
+function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
+@inject(Loader, AuthService, Notification, I18N, QConfig, HttpClient)
 export class SchemaEditorFiles {
   @bindable
   schema;
@@ -23,12 +33,13 @@ export class SchemaEditorFiles {
     maxFiles: null
   };
 
-  constructor(loader, authService, notification, i18n, qConfig) {
+  constructor(loader, authService, notification, i18n, qConfig, httpClient) {
     this.loader = loader;
     this.authService = authService;
     this.notification = notification;
     this.i18n = i18n;
     this.qConfig = qConfig;
+    this.httpClient = httpClient;
   }
 
   schemaChanged() {
@@ -183,7 +194,7 @@ export class SchemaEditorFiles {
       files.push(...this.data);
     }
     // preload images already uploaded
-    files.forEach((file, index) => {
+    files.forEach(async (file, index) => {
       if (file && (file.url || file.key && fileBaseUrl)) {
         const mockFile = {
           name: file.key,
@@ -198,7 +209,12 @@ export class SchemaEditorFiles {
         this.dropzone.files.push(mockFile);
         this.dropzone.emit("addedfile", mockFile);
         if (file.type && file.type.includes("image/")) {
-          mockFile.dataURL = fileBaseUrl ? `${fileBaseUrl}/${file.key}` : file.url; // needed for dropzone to create the thumbnail in a canvas
+          const imageUrl = fileBaseUrl ? `${fileBaseUrl}/${file.key}` : file.url;
+          const response = await this.httpClient.fetch(imageUrl);
+          if (!response.ok || response.status >= 400) {
+            return;
+          }
+          mockFile.dataURL =  await blobToDataURL(await response.blob()); // needed for dropzone to create the thumbnail in a canvas
           this.dropzone.createThumbnailFromUrl(
             mockFile,
             this.dropzoneOptions.thumbnailWidth,
