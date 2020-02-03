@@ -7,15 +7,6 @@ import QConfig from "resources/QConfig";
 import { AuthService } from "aurelia-authentication";
 const log = LogManager.getLogger("Q");
 
-function blobToDataURL(blob) {
-  return new Promise((resolve, reject) => {
-    let reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = (e) => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
-}
-
 @inject(Loader, AuthService, Notification, I18N, QConfig, HttpClient)
 export class SchemaEditorFiles {
   @bindable
@@ -214,7 +205,7 @@ export class SchemaEditorFiles {
           if (!response.ok || response.status >= 400) {
             return;
           }
-          mockFile.dataURL =  await blobToDataURL(await response.blob()); // needed for dropzone to create the thumbnail in a canvas
+          mockFile.dataURL =  URL.createObjectURL(await response.blob()); // needed for dropzone to create the thumbnail in a canvas
           this.dropzone.createThumbnailFromUrl(
             mockFile,
             this.dropzoneOptions.thumbnailWidth,
