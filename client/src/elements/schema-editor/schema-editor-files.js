@@ -202,7 +202,7 @@ export class SchemaEditorFiles {
         if (file.type && file.type.includes("image/")) {
           const imageUrl = fileBaseUrl ? `${fileBaseUrl}/${file.key}` : file.url;
           const response = await this.httpClient.fetch(imageUrl);
-          if (!response.ok || response.status >= 400) {
+          if (!response.ok) {
             return;
           }
           mockFile.dataURL =  URL.createObjectURL(await response.blob()); // needed for dropzone to create the thumbnail in a canvas
