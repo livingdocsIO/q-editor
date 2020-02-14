@@ -48,7 +48,7 @@ export class SchemaEditorArray {
     // on all changes. For addElement we already know the schema beforehand e.g.
     if (Array.isArray(this.data)) {
       this.dataItemsSchemas = this.data.map(item => {
-        return this.getSchemaForData(item);
+        return JSON.parse(JSON.stringify(this.getSchemaForData(item)));
       });
     }
 
@@ -85,7 +85,7 @@ export class SchemaEditorArray {
     }
     const entry = this.objectFromSchemaGenerator.generateFromSchema(schema);
 
-    this.dataItemsSchemas.push(schema);
+    this.dataItemsSchemas.push(JSON.parse(JSON.stringify(schema)));
     this.data.push(entry);
 
     this.expand(this.data.indexOf(entry));
